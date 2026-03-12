@@ -1,0 +1,318 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Google Sans", Roboto, Arial, sans-serif;
+        font-size: 13px;
+        color: #2c2c2c;
+        padding: 20px;
+        background: #faf8f5;
+      }
+
+      h2 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a3d2e;
+        margin-bottom: 4px;
+      }
+
+      .subtitle {
+        font-size: 12px;
+        color: #5a5a5a;
+        margin-bottom: 16px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: #5a5a5a;
+        margin-bottom: 6px;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #e0dbd3;
+        border-radius: 6px;
+        font-size: 13px;
+        font-family: "JetBrains Mono", monospace;
+        background: white;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #4a7c59;
+        box-shadow: 0 0 0 2px rgba(74, 124, 89, 0.15);
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-bottom: 16px;
+      }
+
+      .status-badge.connected {
+        background: #e8f5e8;
+        color: #1a5c1a;
+      }
+
+      .status-badge.disconnected {
+        background: #f0ebe3;
+        color: #5a5a5a;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      .status-dot.green {
+        background: #7fb069;
+      }
+      .status-dot.gray {
+        background: #b0b0b0;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+
+      .btn-primary {
+        background: #1a3d2e;
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #2d5a47;
+      }
+
+      .btn-danger {
+        background: transparent;
+        color: #c45d3a;
+        border: 1px solid #c45d3a;
+      }
+      .btn-danger:hover {
+        background: #c45d3a;
+        color: white;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .message {
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        margin-bottom: 12px;
+        display: none;
+      }
+
+      .message.success {
+        display: block;
+        background: #e8f5e8;
+        color: #1a5c1a;
+      }
+
+      .message.error {
+        display: block;
+        background: #fde8e8;
+        color: #8b1a1a;
+      }
+
+      .help-link {
+        display: block;
+        text-align: center;
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 1px solid #e8d5b7;
+      }
+
+      .help-link a {
+        color: #4a7c59;
+        text-decoration: none;
+        font-size: 12px;
+      }
+      .help-link a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>API Key Settings</h2>
+    <p class="subtitle">Connect your Township Canada API key for unlimited conversions.</p>
+
+    <div
+      id="statusBadge"
+      class="status-badge disconnected"
+    >
+      <span
+        class="status-dot gray"
+        id="statusDot"
+      ></span>
+      <span id="statusText">Checking...</span>
+    </div>
+
+    <div
+      id="messageBox"
+      class="message"
+    ></div>
+
+    <div class="form-group">
+      <label for="apiKeyInput">API Key</label>
+      <input
+        type="password"
+        id="apiKeyInput"
+        placeholder="tc_search_..."
+      />
+    </div>
+
+    <div class="btn-group">
+      <button
+        class="btn btn-primary"
+        id="saveBtn"
+        onclick="saveKey()"
+      >
+        Save API Key
+      </button>
+      <button
+        class="btn btn-danger"
+        id="removeBtn"
+        onclick="removeKey()"
+        style="display: none"
+      >
+        Disconnect
+      </button>
+    </div>
+
+    <div class="help-link">
+      <a
+        href="https://app.townshipcanada.com/app/api"
+        target="_blank"
+      >
+        Get an API key at app.townshipcanada.com
+      </a>
+    </div>
+
+    <script>
+      // Load current state
+      checkCurrentKey();
+
+      function checkCurrentKey() {
+        google.script.run
+          .withSuccessHandler(function (key) {
+            if (key) {
+              document.getElementById("apiKeyInput").value = key;
+              // Validate the key
+              google.script.run
+                .withSuccessHandler(function (usage) {
+                  if (usage.apiKeyValid) {
+                    showConnected();
+                  } else {
+                    showDisconnected();
+                    showMessage("Stored API key is invalid. Please update it.", "error");
+                  }
+                })
+                .apiGetUsage();
+            } else {
+              showDisconnected();
+            }
+          })
+          .getApiKey();
+      }
+
+      function saveKey() {
+        var key = document.getElementById("apiKeyInput").value.trim();
+        if (!key) {
+          showMessage("Please enter an API key.", "error");
+          return;
+        }
+
+        if (!key.startsWith("tc_")) {
+          showMessage("Invalid API key format. Keys start with 'tc_'.", "error");
+          return;
+        }
+
+        google.script.run
+          .withSuccessHandler(function () {
+            // Validate by checking usage
+            google.script.run
+              .withSuccessHandler(function (usage) {
+                if (usage.apiKeyValid) {
+                  showConnected();
+                  showMessage("API key connected successfully!", "success");
+                } else {
+                  showDisconnected();
+                  showMessage("API key is invalid. Please check and try again.", "error");
+                  google.script.run.removeApiKey();
+                }
+              })
+              .apiGetUsage();
+          })
+          .setApiKey(key);
+      }
+
+      function removeKey() {
+        google.script.run
+          .withSuccessHandler(function () {
+            document.getElementById("apiKeyInput").value = "";
+            showDisconnected();
+            showMessage("API key removed.", "success");
+          })
+          .removeApiKey();
+      }
+
+      function showConnected() {
+        var badge = document.getElementById("statusBadge");
+        badge.className = "status-badge connected";
+        document.getElementById("statusDot").className = "status-dot green";
+        document.getElementById("statusText").textContent = "Connected (unlimited)";
+        document.getElementById("removeBtn").style.display = "inline-block";
+      }
+
+      function showDisconnected() {
+        var badge = document.getElementById("statusBadge");
+        badge.className = "status-badge disconnected";
+        document.getElementById("statusDot").className = "status-dot gray";
+        document.getElementById("statusText").textContent = "Not connected (10 free/month)";
+        document.getElementById("removeBtn").style.display = "none";
+      }
+
+      function showMessage(text, type) {
+        var el = document.getElementById("messageBox");
+        el.textContent = text;
+        el.className = "message " + type;
+        setTimeout(function () {
+          el.className = "message";
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>

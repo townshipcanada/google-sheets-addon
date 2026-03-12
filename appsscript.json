@@ -1,0 +1,25 @@
+{
+  "timeZone": "America/Edmonton",
+  "dependencies": {},
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/spreadsheets.currentonly",
+    "https://www.googleapis.com/auth/script.container.ui"
+  ],
+  "addOns": {
+    "common": {
+      "name": "Township Canada",
+      "logoUrl": "https://townshipcanada.com/icon-192.png",
+      "layoutProperties": {
+        "primaryColor": "#1a3d2e",
+        "secondaryColor": "#4a7c59"
+      }
+    },
+    "sheets": {
+      "homepageTrigger": {
+        "runFunction": "onHomepage"
+      }
+    }
+  }
+}

@@ -1,0 +1,527 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Google Sans", Roboto, Arial, sans-serif;
+        font-size: 13px;
+        color: #2c2c2c;
+        padding: 16px;
+        background: #faf8f5;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e8d5b7;
+      }
+
+      .logo-text {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a3d2e;
+      }
+
+      .usage-bar {
+        background: #f0ebe3;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 16px;
+      }
+
+      .usage-bar .label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #5a5a5a;
+        margin-bottom: 4px;
+      }
+
+      .usage-bar .count {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1a3d2e;
+      }
+
+      .usage-bar .count span {
+        font-size: 13px;
+        font-weight: 400;
+        color: #5a5a5a;
+      }
+
+      .progress-track {
+        background: #e0dbd3;
+        border-radius: 4px;
+        height: 6px;
+        margin-top: 8px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        background: #4a7c59;
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s;
+      }
+
+      .progress-fill.warning {
+        background: #e8a84d;
+      }
+      .progress-fill.danger {
+        background: #c45d3a;
+      }
+      .progress-fill.unlimited {
+        background: #7fb069;
+        width: 100%;
+      }
+
+      .section-title {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #5a5a5a;
+        margin-bottom: 8px;
+        margin-top: 16px;
+      }
+
+      .help-text {
+        font-size: 12px;
+        color: #5a5a5a;
+        margin-bottom: 12px;
+        line-height: 1.4;
+      }
+
+      .btn {
+        display: block;
+        width: 100%;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: center;
+        margin-bottom: 8px;
+        transition: background 0.15s;
+      }
+
+      .btn-primary {
+        background: #1a3d2e;
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #2d5a47;
+      }
+      .btn-primary:disabled {
+        background: #b0b0b0;
+        cursor: not-allowed;
+      }
+
+      .btn-secondary {
+        background: #f0ebe3;
+        color: #2c2c2c;
+      }
+      .btn-secondary:hover {
+        background: #e8d5b7;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: #4a7c59;
+        border: 1px solid #4a7c59;
+      }
+      .btn-outline:hover {
+        background: #4a7c59;
+        color: white;
+      }
+
+      .range-input {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .range-input input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #e0dbd3;
+        border-radius: 6px;
+        font-size: 13px;
+        background: white;
+      }
+
+      .range-input input:focus {
+        outline: none;
+        border-color: #4a7c59;
+        box-shadow: 0 0 0 2px rgba(74, 124, 89, 0.15);
+      }
+
+      .status-message {
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        margin-bottom: 12px;
+        display: none;
+      }
+
+      .status-message.success {
+        display: block;
+        background: #e8f5e8;
+        color: #1a5c1a;
+        border: 1px solid #7fb069;
+      }
+
+      .status-message.error {
+        display: block;
+        background: #fde8e8;
+        color: #8b1a1a;
+        border: 1px solid #c45d3a;
+      }
+
+      .status-message.info {
+        display: block;
+        background: #e8eef5;
+        color: #1a3d5c;
+        border: 1px solid #5a8cba;
+      }
+
+      .upgrade-banner {
+        background: linear-gradient(135deg, #1a3d2e 0%, #2d5a47 100%);
+        color: white;
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 16px;
+        display: none;
+      }
+
+      .upgrade-banner h4 {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .upgrade-banner p {
+        font-size: 11px;
+        opacity: 0.85;
+        margin-bottom: 8px;
+        line-height: 1.4;
+      }
+
+      .upgrade-banner .btn {
+        background: white;
+        color: #1a3d2e;
+        font-weight: 600;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .results-summary {
+        background: white;
+        border: 1px solid #e0dbd3;
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 12px;
+        display: none;
+      }
+
+      .results-summary .stat {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        font-size: 12px;
+      }
+
+      .results-summary .stat-value {
+        font-weight: 600;
+        color: #1a3d2e;
+      }
+
+      .footer {
+        margin-top: 20px;
+        padding-top: 12px;
+        border-top: 1px solid #e8d5b7;
+        text-align: center;
+      }
+
+      .footer a {
+        color: #4a7c59;
+        text-decoration: none;
+        font-size: 11px;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo">
+      <div class="logo-text">Township Canada</div>
+    </div>
+
+    <!-- Usage indicator -->
+    <div class="usage-bar">
+      <div class="label">Monthly Usage</div>
+      <div
+        class="count"
+        id="usageCount"
+      >
+        <span>Loading...</span>
+      </div>
+      <div class="progress-track">
+        <div
+          class="progress-fill"
+          id="usageProgress"
+          style="width: 0%"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Batch conversion section -->
+    <div class="section-title">Batch Convert</div>
+    <p class="help-text">
+      Select a range of cells containing legal land descriptions, then click Convert. Results will
+      be written to adjacent columns (Latitude, Longitude, Province).
+    </p>
+
+    <button
+      class="btn btn-primary"
+      id="convertSelectedBtn"
+      onclick="convertSelected()"
+    >
+      Convert Selected Cells
+    </button>
+
+    <div
+      class="section-title"
+      style="margin-top: 20px"
+    >
+      Convert by Column
+    </div>
+    <div class="range-input">
+      <input
+        type="text"
+        id="columnInput"
+        placeholder="Column letter (e.g., A)"
+        maxlength="2"
+      />
+    </div>
+    <button
+      class="btn btn-secondary"
+      id="convertColumnBtn"
+      onclick="convertColumn()"
+    >
+      Convert Entire Column
+    </button>
+
+    <!-- Status messages -->
+    <div
+      class="status-message"
+      id="statusMessage"
+    ></div>
+
+    <!-- Results summary -->
+    <div
+      class="results-summary"
+      id="resultsSummary"
+    >
+      <div class="stat">
+        <span>Total</span>
+        <span
+          class="stat-value"
+          id="statTotal"
+          >0</span
+        >
+      </div>
+      <div class="stat">
+        <span>Success</span>
+        <span
+          class="stat-value"
+          id="statSuccess"
+          style="color: #4a7c59"
+          >0</span
+        >
+      </div>
+      <div class="stat">
+        <span>Failed</span>
+        <span
+          class="stat-value"
+          id="statFailed"
+          style="color: #c45d3a"
+          >0</span
+        >
+      </div>
+    </div>
+
+    <!-- Upgrade banner (shown when limit reached) -->
+    <div
+      class="upgrade-banner"
+      id="upgradeBanner"
+    >
+      <h4>Unlock Unlimited Conversions</h4>
+      <p>Connect your Township Canada API key to remove the 10/month limit.</p>
+      <button
+        class="btn"
+        onclick="google.script.run.showSettingsDialog()"
+      >
+        Connect API Key
+      </button>
+    </div>
+
+    <div class="footer">
+      <a
+        href="https://townshipcanada.com"
+        target="_blank"
+        >townshipcanada.com</a
+      >
+      &nbsp;&middot;&nbsp;
+      <a
+        href="https://app.townshipcanada.com/app/api"
+        target="_blank"
+        >Get API Key</a
+      >
+    </div>
+
+    <script>
+      // Load usage on sidebar open
+      loadUsage();
+
+      function loadUsage() {
+        google.script.run
+          .withSuccessHandler(updateUsageDisplay)
+          .withFailureHandler(function () {
+            document.getElementById("usageCount").innerHTML = "<span>Unable to load</span>";
+          })
+          .apiGetUsage();
+      }
+
+      function updateUsageDisplay(usage) {
+        var countEl = document.getElementById("usageCount");
+        var progressEl = document.getElementById("usageProgress");
+        var bannerEl = document.getElementById("upgradeBanner");
+
+        if (usage.apiKeyValid) {
+          countEl.innerHTML = "Unlimited <span>(API key connected)</span>";
+          progressEl.className = "progress-fill unlimited";
+          progressEl.style.width = "100%";
+          bannerEl.style.display = "none";
+        } else {
+          countEl.innerHTML = usage.used + "<span> / " + usage.limit + "</span>";
+          var pct = Math.min(100, (usage.used / usage.limit) * 100);
+          progressEl.style.width = pct + "%";
+
+          if (pct >= 100) {
+            progressEl.className = "progress-fill danger";
+            bannerEl.style.display = "block";
+          } else if (pct >= 70) {
+            progressEl.className = "progress-fill warning";
+          } else {
+            progressEl.className = "progress-fill";
+          }
+        }
+      }
+
+      function convertSelected() {
+        var btn = document.getElementById("convertSelectedBtn");
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Converting...';
+        hideStatus();
+
+        google.script.run
+          .withSuccessHandler(function (result) {
+            btn.disabled = false;
+            btn.textContent = "Convert Selected Cells";
+            if (result) {
+              showStatus("Conversion complete!", "success");
+              document.getElementById("resultsSummary").style.display = "block";
+              document.getElementById("statTotal").textContent = result.total;
+              document.getElementById("statSuccess").textContent = result.success;
+              document.getElementById("statFailed").textContent = result.failure;
+            }
+            loadUsage();
+          })
+          .withFailureHandler(function (err) {
+            btn.disabled = false;
+            btn.textContent = "Convert Selected Cells";
+            showStatus(err.message || "Conversion failed", "error");
+            loadUsage();
+          })
+          .convertSelectedDirect();
+      }
+
+      function convertColumn() {
+        var col = document.getElementById("columnInput").value.trim().toUpperCase();
+        if (!col || !/^[A-Z]{1,2}$/.test(col)) {
+          showStatus("Please enter a valid column letter (e.g., A, B, AA).", "error");
+          return;
+        }
+
+        var btn = document.getElementById("convertColumnBtn");
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Converting...';
+        hideStatus();
+
+        google.script.run
+          .withSuccessHandler(function (result) {
+            btn.disabled = false;
+            btn.textContent = "Convert Entire Column";
+            if (result) {
+              showStatus(
+                "Done! Converted " + result.success + "/" + result.total + " descriptions.",
+                "success"
+              );
+              document.getElementById("resultsSummary").style.display = "block";
+              document.getElementById("statTotal").textContent = result.total;
+              document.getElementById("statSuccess").textContent = result.success;
+              document.getElementById("statFailed").textContent = result.failure;
+            }
+            loadUsage();
+          })
+          .withFailureHandler(function (err) {
+            btn.disabled = false;
+            btn.textContent = "Convert Entire Column";
+            showStatus(err.message || "Conversion failed", "error");
+            loadUsage();
+          })
+          .convertColumnDirect(col);
+      }
+
+      function showStatus(message, type) {
+        var el = document.getElementById("statusMessage");
+        el.textContent = message;
+        el.className = "status-message " + type;
+      }
+
+      function hideStatus() {
+        document.getElementById("statusMessage").className = "status-message";
+        document.getElementById("resultsSummary").style.display = "none";
+      }
+    </script>
+  </body>
+</html>
