@@ -119,7 +119,7 @@ function convertSelectedCells() {
         "Free monthly limit reached (10 conversions/month).\n\n" +
         "To continue, connect your Township Canada API key:\n" +
         "Township Canada menu > Settings\n\n" +
-        "Get an API key at: https://app.townshipcanada.com/app/api"
+        "Get an API key at: https://townshipcanada.com/app/api"
       );
     } else {
       SpreadsheetApp.getUi().alert("Error: " + e.message);

@@ -7,7 +7,7 @@
 var CONFIG = (function() {
   var props = PropertiesService.getScriptProperties();
   return {
-    API_BASE_URL: props.getProperty("API_BASE_URL") || "https://app.townshipcanada.com/api/integrations/sheets",
+    API_BASE_URL: props.getProperty("API_BASE_URL") || "https://townshipcanada.com/api/integrations/sheets",
     FREE_MONTHLY_LIMIT: 10,
     MAX_BATCH_SIZE: 200,
     ADDON_VERSION: "1.0.0"
