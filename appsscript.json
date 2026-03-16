@@ -5,12 +5,14 @@
   "runtimeVersion": "V8",
   "oauthScopes": [
     "https://www.googleapis.com/auth/spreadsheets.currentonly",
-    "https://www.googleapis.com/auth/script.container.ui"
+    "https://www.googleapis.com/auth/script.container.ui",
+    "https://www.googleapis.com/auth/script.external_request"
   ],
+  "urlFetchWhitelist": ["https://townshipcanada.com/api/integrations/sheets/"],
   "addOns": {
     "common": {
       "name": "Township Canada",
-      "logoUrl": "https://townshipcanada.com/icon-192.png",
+      "logoUrl": "https://townshipcanada.com/images/logo.webp",
       "layoutProperties": {
         "primaryColor": "#1a3d2e",
         "secondaryColor": "#4a7c59"

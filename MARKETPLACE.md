@@ -6,11 +6,11 @@ Township Canada - Legal Land Description Converter
 
 ## Short Description (140 chars)
 
-Convert Canadian legal land descriptions (DLS, NTS, Township) to GPS coordinates directly in Google Sheets.
+Convert Canadian legal land descriptions (DLS, NTS, Township) to GPS coordinates directly in Google Sheets™.
 
 ## Detailed Description
 
-Township Canada converts Canadian legal land descriptions to GPS coordinates directly in your spreadsheet. No copy-pasting from web tools, no manual lookups.
+Township Canada converts Canadian legal land descriptions to GPS coordinates directly in your Google Sheets™ spreadsheet. No copy-pasting from web tools, no manual lookups.
 
 **Custom spreadsheet functions:**
 
@@ -74,3 +74,8 @@ https://townshipcanada.com/support
 
 - spreadsheets.currentonly: Required to read legal land descriptions from cells and write conversion results (coordinates) back to the spreadsheet.
 - script.container.ui: Required to display the batch conversion sidebar and API key settings dialog.
+- script.external_request: Required to call the Township Canada API for land description conversions.
+
+## Trademark Attribution
+
+Google Sheets™ is a trademark of Google LLC.
