@@ -74,6 +74,11 @@
         color: #1a5c1a;
       }
 
+      .status-badge.trial {
+        background: #e8eef5;
+        color: #1a3d5c;
+      }
+
       .status-badge.disconnected {
         background: #f0ebe3;
         color: #5a5a5a;
@@ -87,6 +92,9 @@
 
       .status-dot.green {
         background: #7fb069;
+      }
+      .status-dot.blue {
+        background: #5a8cba;
       }
       .status-dot.gray {
         background: #b0b0b0;
@@ -147,27 +155,29 @@
         color: #8b1a1a;
       }
 
-      .help-link {
-        display: block;
-        text-align: center;
+      .help-links {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
         margin-top: 16px;
         padding-top: 12px;
         border-top: 1px solid #e8d5b7;
+        text-align: center;
       }
 
-      .help-link a {
+      .help-links a {
         color: #4a7c59;
         text-decoration: none;
         font-size: 12px;
       }
-      .help-link a:hover {
+      .help-links a:hover {
         text-decoration: underline;
       }
     </style>
   </head>
   <body>
     <h2>API Key Settings</h2>
-    <p class="subtitle">Connect your Township Canada API key for unlimited conversions.</p>
+    <p class="subtitle">Connect a trial or paid API key to convert legal land descriptions.</p>
 
     <div
       id="statusBadge"
@@ -190,7 +200,7 @@
       <input
         type="password"
         id="apiKeyInput"
-        placeholder="tc_search_..."
+        placeholder="tc_trial_... or tc_..."
       />
     </div>
 
@@ -212,12 +222,18 @@
       </button>
     </div>
 
-    <div class="help-link">
+    <div class="help-links">
       <a
-        href="https://townshipcanada.com/app/api"
+        href="https://townshipcanada.com/api/try?ref=sheets"
         target="_blank"
       >
-        Get an API key at townshipcanada.com
+        Get a free trial key (100 calls, 7 days)
+      </a>
+      <a
+        href="https://townshipcanada.com/pricing#api"
+        target="_blank"
+      >
+        View paid API plans
       </a>
     </div>
 
@@ -234,7 +250,11 @@
               google.script.run
                 .withSuccessHandler(function (usage) {
                   if (usage.apiKeyValid) {
-                    showConnected();
+                    if (usage.plan === "trial") {
+                      showTrial(usage);
+                    } else {
+                      showConnected();
+                    }
                   } else {
                     showDisconnected();
                     showMessage("Stored API key is invalid. Please update it.", "error");
@@ -266,8 +286,13 @@
             google.script.run
               .withSuccessHandler(function (usage) {
                 if (usage.apiKeyValid) {
-                  showConnected();
-                  showMessage("API key connected successfully!", "success");
+                  if (usage.plan === "trial") {
+                    showTrial(usage);
+                    showMessage("Trial key connected! " + usage.remaining + " calls remaining.", "success");
+                  } else {
+                    showConnected();
+                    showMessage("API key connected successfully!", "success");
+                  }
                 } else {
                   showDisconnected();
                   showMessage("API key is invalid. Please check and try again.", "error");
@@ -297,11 +322,19 @@
         document.getElementById("removeBtn").style.display = "inline-block";
       }
 
+      function showTrial(usage) {
+        var badge = document.getElementById("statusBadge");
+        badge.className = "status-badge trial";
+        document.getElementById("statusDot").className = "status-dot blue";
+        document.getElementById("statusText").textContent = "Trial (" + usage.remaining + " calls, " + usage.daysLeft + " days left)";
+        document.getElementById("removeBtn").style.display = "inline-block";
+      }
+
       function showDisconnected() {
         var badge = document.getElementById("statusBadge");
         badge.className = "status-badge disconnected";
         document.getElementById("statusDot").className = "status-dot gray";
-        document.getElementById("statusText").textContent = "Not connected (10 free/month)";
+        document.getElementById("statusText").textContent = "Not connected";
         document.getElementById("removeBtn").style.display = "none";
       }
 

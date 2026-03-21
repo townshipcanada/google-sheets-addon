@@ -2,14 +2,14 @@
  * Township Canada Google Sheets Add-On - API Client
  *
  * Handles all HTTP communication with the Township Canada API.
+ * Requires a trial or paid API key.
  */
 
 /**
- * Build request headers with installation ID and optional API key.
+ * Build request headers with API key.
  */
 function buildHeaders() {
   var headers = {
-    "X-Installation-Id": getInstallationId(),
     "Content-Type": "application/json"
   };
   var apiKey = getApiKey();
@@ -20,11 +20,22 @@ function buildHeaders() {
 }
 
 /**
+ * Check if an API key is configured.
+ */
+function hasApiKey() {
+  return !!getApiKey();
+}
+
+/**
  * Convert a single legal land description via the API.
  * @param {string} query - The legal land description to convert.
  * @returns {object} Conversion result with latitude, longitude, etc.
  */
 function apiConvertSingle(query) {
+  if (!hasApiKey()) {
+    throw new Error("NO_API_KEY");
+  }
+
   var url = CONFIG.API_BASE_URL + "/convert";
   var options = {
     method: "post",
@@ -37,11 +48,14 @@ function apiConvertSingle(query) {
   var code = response.getResponseCode();
   var body = JSON.parse(response.getContentText());
 
-  if (code === 429) {
-    throw new Error("FREE_LIMIT_REACHED");
-  }
   if (code === 401) {
     throw new Error("INVALID_API_KEY");
+  }
+  if (code === 403) {
+    throw new Error("TRIAL_EXPIRED");
+  }
+  if (code === 429) {
+    throw new Error("TRIAL_LIMIT_REACHED");
   }
   if (code !== 200) {
     throw new Error(body.message || "API request failed");
@@ -56,6 +70,10 @@ function apiConvertSingle(query) {
  * @returns {object} Batch result with data array and statistics.
  */
 function apiConvertBatch(queries) {
+  if (!hasApiKey()) {
+    throw new Error("NO_API_KEY");
+  }
+
   var url = CONFIG.API_BASE_URL + "/convert-batch";
   var options = {
     method: "post",
@@ -68,11 +86,14 @@ function apiConvertBatch(queries) {
   var code = response.getResponseCode();
   var body = JSON.parse(response.getContentText());
 
-  if (code === 429) {
-    throw new Error("FREE_LIMIT_REACHED");
-  }
   if (code === 401) {
     throw new Error("INVALID_API_KEY");
+  }
+  if (code === 403) {
+    throw new Error("TRIAL_EXPIRED");
+  }
+  if (code === 429) {
+    throw new Error("TRIAL_LIMIT_REACHED");
   }
   if (code !== 200) {
     throw new Error(body.message || "Batch API request failed");
@@ -82,10 +103,14 @@ function apiConvertBatch(queries) {
 }
 
 /**
- * Get current usage information for this installation.
+ * Get current usage information for the connected API key.
  * @returns {object} Usage data with plan, limit, used, remaining.
  */
 function apiGetUsage() {
+  if (!hasApiKey()) {
+    return { plan: "none", apiKeyValid: false };
+  }
+
   var url = CONFIG.API_BASE_URL + "/usage";
   var options = {
     method: "get",
@@ -94,11 +119,10 @@ function apiGetUsage() {
   };
 
   var response = UrlFetchApp.fetch(url, options);
-  var body = JSON.parse(response.getContentText());
 
   if (response.getResponseCode() !== 200) {
-    return { plan: "free", limit: CONFIG.FREE_MONTHLY_LIMIT, used: 0, remaining: CONFIG.FREE_MONTHLY_LIMIT };
+    return { plan: "none", apiKeyValid: false };
   }
 
-  return body.data;
+  return JSON.parse(response.getContentText()).data;
 }

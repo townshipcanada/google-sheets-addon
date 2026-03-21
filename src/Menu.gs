@@ -48,6 +48,42 @@ function showSidebar() {
 }
 
 /**
+ * Show the appropriate error alert for API key issues.
+ */
+function showApiKeyError(errorMessage) {
+  var ui = SpreadsheetApp.getUi();
+  if (errorMessage === "NO_API_KEY") {
+    ui.alert(
+      "API key required.\n\n" +
+      "Connect a trial or paid API key:\n" +
+      "Township Canada menu > Settings\n\n" +
+      "Get a free trial key at:\n" +
+      CONFIG.TRIAL_URL
+    );
+  } else if (errorMessage === "TRIAL_EXPIRED") {
+    ui.alert(
+      "Your trial key has expired.\n\n" +
+      "Upgrade to a paid plan for continued access:\n" +
+      "https://townshipcanada.com/pricing#api"
+    );
+  } else if (errorMessage === "TRIAL_LIMIT_REACHED") {
+    ui.alert(
+      "Trial usage limit reached.\n\n" +
+      "Upgrade to a paid plan for continued access:\n" +
+      "https://townshipcanada.com/pricing#api"
+    );
+  } else if (errorMessage === "INVALID_API_KEY") {
+    ui.alert(
+      "Invalid API key.\n\n" +
+      "Check your key in:\n" +
+      "Township Canada menu > Settings"
+    );
+  } else {
+    ui.alert("Error: " + errorMessage);
+  }
+}
+
+/**
  * Convert the currently selected cells in-place.
  * Reads LLDs from selected range, converts them, and writes lat/lng to adjacent columns.
  */
@@ -114,16 +150,7 @@ function convertSelectedCells() {
       "Failed: " + stats.failure
     );
   } catch (e) {
-    if (e.message === "FREE_LIMIT_REACHED") {
-      SpreadsheetApp.getUi().alert(
-        "Free monthly limit reached (10 conversions/month).\n\n" +
-        "To continue, connect your Township Canada API key:\n" +
-        "Township Canada menu > Settings\n\n" +
-        "Get an API key at: https://townshipcanada.com/app/api"
-      );
-    } else {
-      SpreadsheetApp.getUi().alert("Error: " + e.message);
-    }
+    showApiKeyError(e.message);
   }
 }
 
@@ -183,15 +210,16 @@ function convertColumnPrompt() {
       var response = apiConvertBatch(chunk);
       allResults = allResults.concat(response.data);
     } catch (e) {
-      if (e.message === "FREE_LIMIT_REACHED") {
+      if (e.message === "TRIAL_LIMIT_REACHED" || e.message === "TRIAL_EXPIRED") {
         ui.alert(
-          "Free monthly limit reached after " + allResults.length + " conversions.\n\n" +
-          "Connect your API key for unlimited access:\n" +
-          "Township Canada menu > Settings"
+          "Trial limit reached after " + allResults.length + " conversions.\n\n" +
+          "Upgrade to a paid plan for continued access:\n" +
+          "https://townshipcanada.com/pricing#api"
         );
         break;
       }
-      throw e;
+      showApiKeyError(e.message);
+      return;
     }
   }
 
@@ -348,14 +376,21 @@ function showUsageDialog() {
   var usage = apiGetUsage();
   var message;
 
-  if (usage.apiKeyValid) {
-    message = "Plan: API Key (unlimited)\nAPI key is connected and valid.";
+  if (!usage.apiKeyValid) {
+    message = "No API key connected.\n\n" +
+      "Connect a trial or paid API key to start converting:\n" +
+      "Township Canada menu > Settings\n\n" +
+      "Get a free trial key (100 calls, 7 days):\n" +
+      CONFIG.TRIAL_URL;
+  } else if (usage.plan === "trial") {
+    message = "Plan: Trial\n" +
+      "Used: " + usage.used + "/" + usage.limit + " calls\n" +
+      "Remaining: " + usage.remaining + " calls\n" +
+      "Days left: " + usage.daysLeft + "\n\n" +
+      "Upgrade for unlimited access:\n" +
+      "https://townshipcanada.com/pricing#api";
   } else {
-    message = "Plan: Free\n" +
-      "Used: " + usage.used + "/" + usage.limit + " this month\n" +
-      "Remaining: " + usage.remaining + " conversions\n\n" +
-      "Connect an API key for unlimited conversions:\n" +
-      "Township Canada menu > Settings";
+    message = "Plan: Paid API Key (unlimited)\nAPI key is connected and valid.";
   }
 
   SpreadsheetApp.getUi().alert("Township Canada Usage", message, SpreadsheetApp.getUi().ButtonSet.OK);
@@ -367,6 +402,6 @@ function showUsageDialog() {
 function showSettingsDialog() {
   var html = HtmlService.createHtmlOutputFromFile("Settings")
     .setWidth(400)
-    .setHeight(300);
+    .setHeight(350);
   SpreadsheetApp.getUi().showModalDialog(html, "Township Canada Settings");
 }

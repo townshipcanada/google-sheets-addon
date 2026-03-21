@@ -10,9 +10,14 @@
 function createHomepageCard() {
   var usage = apiGetUsage();
 
-  var usageText = usage.apiKeyValid
-    ? "Unlimited (API key connected)"
-    : usage.used + "/" + usage.limit + " free conversions this month";
+  var usageText;
+  if (!usage.apiKeyValid) {
+    usageText = "No API key connected";
+  } else if (usage.plan === "trial") {
+    usageText = usage.used + "/" + usage.limit + " trial calls (" + usage.daysLeft + " days left)";
+  } else {
+    usageText = "Unlimited (paid API key)";
+  }
 
   var card = CardService.newCardBuilder()
     .setHeader(
@@ -26,7 +31,7 @@ function createHomepageCard() {
         .addWidget(
           CardService.newDecoratedText()
             .setText(usageText)
-            .setTopLabel("Monthly Conversions")
+            .setTopLabel("API Usage")
         )
     )
     .addSection(
@@ -68,7 +73,7 @@ function createHomepageCard() {
       CardService.newCardSection()
         .addWidget(
           CardService.newTextButton()
-            .setText("Connect API Key (Unlimited)")
+            .setText("Connect API Key")
             .setOnClickAction(
               CardService.newAction().setFunctionName("openSettingsFromCard")
             )
