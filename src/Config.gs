@@ -7,7 +7,8 @@
 var CONFIG = (function() {
   var props = PropertiesService.getScriptProperties();
   return {
-    API_BASE_URL: props.getProperty("API_BASE_URL") || "https://townshipcanada.com/api/integrations/trial",
+    TRIAL_API_BASE_URL: props.getProperty("TRIAL_API_BASE_URL") || "https://townshipcanada.com/api/integrations/trial",
+    PAID_API_BASE_URL: props.getProperty("PAID_API_BASE_URL") || "https://developer.townshipcanada.com",
     MAX_BATCH_SIZE: 200,
     ADDON_VERSION: "1.1.0",
     TRIAL_URL: "https://townshipcanada.com/api/try?ref=sheets"
@@ -33,4 +34,21 @@ function setApiKey(apiKey) {
  */
 function removeApiKey() {
   PropertiesService.getUserProperties().deleteProperty("TOWNSHIP_API_KEY");
+}
+
+/**
+ * Check if the stored API key is a trial key.
+ * Trial keys use the prefix "tc_trial_".
+ */
+function isTrialKey() {
+  return getApiKey().indexOf("tc_trial_") === 0;
+}
+
+/**
+ * Get the appropriate API base URL based on the key type.
+ * Trial keys use the integration trial endpoint;
+ * paid keys use the developer API.
+ */
+function getApiBaseUrl() {
+  return isTrialKey() ? CONFIG.TRIAL_API_BASE_URL : CONFIG.PAID_API_BASE_URL;
 }

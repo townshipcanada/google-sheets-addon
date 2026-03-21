@@ -2,7 +2,9 @@
  * Township Canada Google Sheets Add-On - API Client
  *
  * Handles all HTTP communication with the Township Canada API.
- * Requires a trial or paid API key.
+ * Both trial and paid API keys use the same request/response contract.
+ * Trial keys route to townshipcanada.com/api/integrations/trial;
+ * paid keys route to developer.townshipcanada.com.
  */
 
 /**
@@ -27,7 +29,35 @@ function hasApiKey() {
 }
 
 /**
+ * Extract coordinates from a GeoJSON FeatureCollection response.
+ * Finds the centroid feature and returns a flat object.
+ */
+function extractFromFeatureCollection(fc) {
+  var features = fc.features || [];
+  var centroid = null;
+  for (var i = 0; i < features.length; i++) {
+    if (features[i].properties && features[i].properties.shape === "centroid") {
+      centroid = features[i];
+      break;
+    }
+  }
+  if (!centroid) {
+    centroid = features[0];
+  }
+  if (!centroid) {
+    return { latitude: null, longitude: null, legal_location: null, province: null };
+  }
+  return {
+    latitude: centroid.geometry.coordinates[1],
+    longitude: centroid.geometry.coordinates[0],
+    legal_location: centroid.properties.legal_location || "",
+    province: centroid.properties.province || ""
+  };
+}
+
+/**
  * Convert a single legal land description via the API.
+ * Uses GET /search/legal-location — same contract for trial and paid keys.
  * @param {string} query - The legal land description to convert.
  * @returns {object} Conversion result with latitude, longitude, etc.
  */
@@ -36,11 +66,10 @@ function apiConvertSingle(query) {
     throw new Error("NO_API_KEY");
   }
 
-  var url = CONFIG.API_BASE_URL + "/convert";
+  var url = getApiBaseUrl() + "/search/legal-location?location=" + encodeURIComponent(query);
   var options = {
-    method: "post",
+    method: "get",
     headers: buildHeaders(),
-    payload: JSON.stringify({ query: query }),
     muteHttpExceptions: true
   };
 
@@ -61,24 +90,25 @@ function apiConvertSingle(query) {
     throw new Error(body.message || "API request failed");
   }
 
-  return body.data;
+  return extractFromFeatureCollection(body);
 }
 
 /**
  * Convert a batch of legal land descriptions via the API.
+ * Uses POST /batch/legal-location — same contract for trial and paid keys.
  * @param {string[]} queries - Array of legal land descriptions.
- * @returns {object} Batch result with data array and statistics.
+ * @returns {object[]} Array of GeoJSON FeatureCollections.
  */
 function apiConvertBatch(queries) {
   if (!hasApiKey()) {
     throw new Error("NO_API_KEY");
   }
 
-  var url = CONFIG.API_BASE_URL + "/convert-batch";
+  var url = getApiBaseUrl() + "/batch/legal-location";
   var options = {
     method: "post",
     headers: buildHeaders(),
-    payload: JSON.stringify({ batch: queries }),
+    payload: JSON.stringify(queries),
     muteHttpExceptions: true
   };
 
@@ -104,6 +134,7 @@ function apiConvertBatch(queries) {
 
 /**
  * Get current usage information for the connected API key.
+ * Usage endpoint is only available for trial keys.
  * @returns {object} Usage data with plan, limit, used, remaining.
  */
 function apiGetUsage() {
@@ -111,7 +142,11 @@ function apiGetUsage() {
     return { plan: "none", apiKeyValid: false };
   }
 
-  var url = CONFIG.API_BASE_URL + "/usage";
+  if (!isTrialKey()) {
+    return { plan: "api_key", apiKeyValid: true };
+  }
+
+  var url = CONFIG.TRIAL_API_BASE_URL + "/usage";
   var options = {
     method: "get",
     headers: buildHeaders(),
