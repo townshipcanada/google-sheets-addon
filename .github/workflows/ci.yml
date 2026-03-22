@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate project structure
+        run: |
+          echo "Checking Apps Script project structure..."
+          test -f appsscript.json && echo "appsscript.json found" || echo "Missing appsscript.json"
+          test -d src && echo "src/ directory found" || echo "Missing src/"
+          if [ -f "package.json" ]; then
+            npm ci
+            npm run lint --if-present
+            npm test --if-present
+          fi
