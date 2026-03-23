@@ -8,9 +8,9 @@
  * Create the homepage card shown when the add-on is opened.
  */
 function createHomepageCard() {
-  var usage = apiGetUsage();
+  const usage = apiGetUsage();
 
-  var usageText;
+  let usageText;
   if (!usage.apiKeyValid) {
     usageText = "No API key connected";
   } else if (usage.plan === "trial") {
@@ -19,7 +19,7 @@ function createHomepageCard() {
     usageText = "Unlimited (paid API key)";
   }
 
-  var card = CardService.newCardBuilder()
+  const card = CardService.newCardBuilder()
     .setHeader(
       CardService.newCardHeader()
         .setTitle("Township Canada")
@@ -39,19 +39,19 @@ function createHomepageCard() {
         .setHeader("Custom Functions")
         .addWidget(
           CardService.newDecoratedText()
-            .setText('=TOWNSHIP("NW-25-24-1-W5")')
+            .setText('=TOWNSHIP_CANADA("NW-25-24-1-W5")')
             .setTopLabel("Get lat/lng coordinates")
             .setWrapText(true)
         )
         .addWidget(
           CardService.newDecoratedText()
-            .setText('=TOWNSHIP_LAT("LSD 10-33-045-04 W4")')
+            .setText('=TOWNSHIP_CANADA_LAT("LSD 10-33-045-04 W4")')
             .setTopLabel("Get latitude only")
             .setWrapText(true)
         )
         .addWidget(
           CardService.newDecoratedText()
-            .setText('=TOWNSHIP_LNG("A-2-F/93-P-8")')
+            .setText('=TOWNSHIP_CANADA_LNG("A-2-F/93-P-8")')
             .setTopLabel("Get longitude only")
             .setWrapText(true)
         )

@@ -8,7 +8,10 @@
     "https://www.googleapis.com/auth/script.container.ui",
     "https://www.googleapis.com/auth/script.external_request"
   ],
-  "urlFetchWhitelist": ["https://townshipcanada.com/api/integrations/sheets/"],
+  "urlFetchWhitelist": [
+    "https://townshipcanada.com/api/integrations/trial/",
+    "https://developer.townshipcanada.com/"
+  ],
   "addOns": {
     "common": {
       "name": "Township Canada",

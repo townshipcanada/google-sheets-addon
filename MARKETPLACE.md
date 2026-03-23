@@ -6,15 +6,15 @@ Township Canada - Legal Land Description Converter
 
 ## Short Description (140 chars)
 
-Convert Canadian legal land descriptions (DLS, NTS, Township) to GPS coordinates directly in Google Sheets™.
+Convert Canadian legal land descriptions (DLS, NTS, Township) to GPS coordinates directly in Google Sheets.
 
 ## Detailed Description
 
-Township Canada converts Canadian legal land descriptions to GPS coordinates directly in your Google Sheets™ spreadsheet. No copy-pasting from web tools, no manual lookups.
+Township Canada converts Canadian legal land descriptions to GPS coordinates directly in your Google Sheets spreadsheet. No copy-pasting from web tools, no manual lookups.
 
 **Custom spreadsheet functions:**
 
-Use =TOWNSHIP("NW-25-24-1-W5") in any cell to get latitude and longitude instantly. Separate functions for latitude only (=TOWNSHIP_LAT), longitude only (=TOWNSHIP_LNG), and province (=TOWNSHIP_PROVINCE).
+Use =TOWNSHIP_CANADA("NW-25-24-1-W5") in any cell to get latitude and longitude instantly. Separate functions for latitude only (=TOWNSHIP_CANADA_LAT), longitude only (=TOWNSHIP_CANADA_LNG), and province (=TOWNSHIP_CANADA_PROVINCE).
 
 **Batch conversion sidebar:**
 
@@ -29,7 +29,7 @@ Select a column of legal land descriptions and convert them all at once. Results
 
 **Free to start:**
 
-10 free conversions per month. Connect your Township Canada API key for unlimited access ($10-20/month).
+Get a free trial key (100 calls, 7 days). Connect your Township Canada API key for unlimited access.
 
 **Who uses Township Canada:**
 
@@ -49,11 +49,11 @@ English
 
 ## Pricing
 
-Freemium - 10 free conversions/month, paid API key for unlimited
+Freemium - free trial key (100 calls, 7 days), paid API key for unlimited
 
 ## Screenshots Required
 
-1. Custom function in action (=TOWNSHIP formula in a cell with result)
+1. Custom function in action (=TOWNSHIP_CANADA formula in a cell with result)
 2. Sidebar batch conversion UI
 3. Results written to adjacent columns after batch conversion
 4. Settings dialog with API key connection
@@ -78,4 +78,4 @@ https://townshipcanada.com/support
 
 ## Trademark Attribution
 
-Google Sheets™ is a trademark of Google LLC.
+Google Sheets is a trademark of Google LLC.

@@ -11,10 +11,10 @@
  * Build request headers with API key.
  */
 function buildHeaders() {
-  var headers = {
+  const headers = {
     "Content-Type": "application/json"
   };
-  var apiKey = getApiKey();
+  const apiKey = getApiKey();
   if (apiKey) {
     headers["X-API-Key"] = apiKey;
   }
@@ -29,13 +29,27 @@ function hasApiKey() {
 }
 
 /**
+ * Safely parse a JSON response body.
+ * Returns the parsed object, or an object with the raw text on failure.
+ * @param {string} text The raw response text.
+ * @returns {object} Parsed JSON or fallback object.
+ */
+function safeParseJson_(text) {
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    return { message: "Invalid JSON response: " + text.substring(0, 200) };
+  }
+}
+
+/**
  * Extract coordinates from a GeoJSON FeatureCollection response.
  * Finds the centroid feature and returns a flat object.
  */
 function extractFromFeatureCollection(fc) {
-  var features = fc.features || [];
-  var centroid = null;
-  for (var i = 0; i < features.length; i++) {
+  const features = fc.features || [];
+  let centroid = null;
+  for (let i = 0; i < features.length; i++) {
     if (features[i].properties && features[i].properties.shape === "centroid") {
       centroid = features[i];
       break;
@@ -57,7 +71,7 @@ function extractFromFeatureCollection(fc) {
 
 /**
  * Convert a single legal land description via the API.
- * Uses GET /search/legal-location — same contract for trial and paid keys.
+ * Uses GET /search/legal-location -- same contract for trial and paid keys.
  * @param {string} query - The legal land description to convert.
  * @returns {object} Conversion result with latitude, longitude, etc.
  */
@@ -66,16 +80,16 @@ function apiConvertSingle(query) {
     throw new Error("NO_API_KEY");
   }
 
-  var url = getApiBaseUrl() + "/search/legal-location?location=" + encodeURIComponent(query);
-  var options = {
+  const url = getApiBaseUrl() + "/search/legal-location?location=" + encodeURIComponent(query);
+  const options = {
     method: "get",
     headers: buildHeaders(),
     muteHttpExceptions: true
   };
 
-  var response = UrlFetchApp.fetch(url, options);
-  var code = response.getResponseCode();
-  var body = JSON.parse(response.getContentText());
+  const response = UrlFetchApp.fetch(url, options);
+  const code = response.getResponseCode();
+  const body = safeParseJson_(response.getContentText());
 
   if (code === 401) {
     throw new Error("INVALID_API_KEY");
@@ -95,7 +109,7 @@ function apiConvertSingle(query) {
 
 /**
  * Convert a batch of legal land descriptions via the API.
- * Uses POST /batch/legal-location — same contract for trial and paid keys.
+ * Uses POST /batch/legal-location -- same contract for trial and paid keys.
  * @param {string[]} queries - Array of legal land descriptions.
  * @returns {object[]} Array of GeoJSON FeatureCollections.
  */
@@ -104,17 +118,17 @@ function apiConvertBatch(queries) {
     throw new Error("NO_API_KEY");
   }
 
-  var url = getApiBaseUrl() + "/batch/legal-location";
-  var options = {
+  const url = getApiBaseUrl() + "/batch/legal-location";
+  const options = {
     method: "post",
     headers: buildHeaders(),
     payload: JSON.stringify(queries),
     muteHttpExceptions: true
   };
 
-  var response = UrlFetchApp.fetch(url, options);
-  var code = response.getResponseCode();
-  var body = JSON.parse(response.getContentText());
+  const response = UrlFetchApp.fetch(url, options);
+  const code = response.getResponseCode();
+  const body = safeParseJson_(response.getContentText());
 
   if (code === 401) {
     throw new Error("INVALID_API_KEY");
@@ -146,18 +160,19 @@ function apiGetUsage() {
     return { plan: "api_key", apiKeyValid: true };
   }
 
-  var url = CONFIG.TRIAL_API_BASE_URL + "/usage";
-  var options = {
+  const url = CONFIG.TRIAL_API_BASE_URL + "/usage";
+  const options = {
     method: "get",
     headers: buildHeaders(),
     muteHttpExceptions: true
   };
 
-  var response = UrlFetchApp.fetch(url, options);
+  const response = UrlFetchApp.fetch(url, options);
 
   if (response.getResponseCode() !== 200) {
     return { plan: "none", apiKeyValid: false };
   }
 
-  return JSON.parse(response.getContentText()).data;
+  const body = safeParseJson_(response.getContentText());
+  return body.data || { plan: "none", apiKeyValid: false };
 }

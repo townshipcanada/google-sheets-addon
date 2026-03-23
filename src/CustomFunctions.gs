@@ -2,11 +2,39 @@
  * Township Canada Google Sheets Add-On - Custom Functions
  *
  * Spreadsheet functions that can be used in any cell:
- *   =TOWNSHIP("NW-25-24-1-W5")           → "52.123456, -114.654321"
- *   =TOWNSHIP_LAT("NW-25-24-1-W5")       → 52.123456
- *   =TOWNSHIP_LNG("NW-25-24-1-W5")       → -114.654321
- *   =TOWNSHIP_PROVINCE("NW-25-24-1-W5")  → "Alberta"
+ *   =TOWNSHIP_CANADA("NW-25-24-1-W5")           -> "52.123456, -114.654321"
+ *   =TOWNSHIP_CANADA_LAT("NW-25-24-1-W5")       -> 52.123456
+ *   =TOWNSHIP_CANADA_LNG("NW-25-24-1-W5")       -> -114.654321
+ *   =TOWNSHIP_CANADA_PROVINCE("NW-25-24-1-W5")  -> "Alberta"
  */
+
+/**
+ * Retrieve a cached API result or fetch and cache a new one.
+ * Uses CacheService with a 6-hour expiry to avoid redundant API calls.
+ * @param {string} lld The legal land description.
+ * @returns {object} Conversion result with latitude, longitude, province, etc.
+ */
+function getCachedResult_(lld) {
+  const cache = CacheService.getUserCache();
+  const cacheKey = "tc_" + lld;
+  const cached = cache.get(cacheKey);
+
+  if (cached) {
+    try {
+      return JSON.parse(cached);
+    } catch (e) {
+      // Corrupted cache entry; fall through to fetch
+    }
+  }
+
+  const result = apiConvertSingle(lld);
+  try {
+    cache.put(cacheKey, JSON.stringify(result), 21600); // 6 hours
+  } catch (e) {
+    // Cache write failure is non-critical; continue
+  }
+  return result;
+}
 
 /**
  * Convert a Canadian legal land description to GPS coordinates.
@@ -26,13 +54,13 @@
  * @return {string} GPS coordinates as "latitude, longitude".
  * @customfunction
  */
-function TOWNSHIP(lld) {
+function TOWNSHIP_CANADA(lld) {
   if (!lld || typeof lld !== "string" || !lld.trim()) {
     return "";
   }
 
   try {
-    var result = apiConvertSingle(lld.trim());
+    const result = getCachedResult_(lld.trim());
     if (result.latitude !== null && result.longitude !== null) {
       return result.latitude.toFixed(6) + ", " + result.longitude.toFixed(6);
     }
@@ -61,13 +89,13 @@ function TOWNSHIP(lld) {
  * @return {number} Latitude in decimal degrees.
  * @customfunction
  */
-function TOWNSHIP_LAT(lld) {
+function TOWNSHIP_CANADA_LAT(lld) {
   if (!lld || typeof lld !== "string" || !lld.trim()) {
     return "";
   }
 
   try {
-    var result = apiConvertSingle(lld.trim());
+    const result = getCachedResult_(lld.trim());
     if (result.latitude !== null) {
       return result.latitude;
     }
@@ -90,13 +118,13 @@ function TOWNSHIP_LAT(lld) {
  * @return {number} Longitude in decimal degrees.
  * @customfunction
  */
-function TOWNSHIP_LNG(lld) {
+function TOWNSHIP_CANADA_LNG(lld) {
   if (!lld || typeof lld !== "string" || !lld.trim()) {
     return "";
   }
 
   try {
-    var result = apiConvertSingle(lld.trim());
+    const result = getCachedResult_(lld.trim());
     if (result.longitude !== null) {
       return result.longitude;
     }
@@ -119,13 +147,13 @@ function TOWNSHIP_LNG(lld) {
  * @return {string} Province name (e.g., "Alberta").
  * @customfunction
  */
-function TOWNSHIP_PROVINCE(lld) {
+function TOWNSHIP_CANADA_PROVINCE(lld) {
   if (!lld || typeof lld !== "string" || !lld.trim()) {
     return "";
   }
 
   try {
-    var result = apiConvertSingle(lld.trim());
+    const result = getCachedResult_(lld.trim());
     if (result.province) {
       return result.province;
     }
