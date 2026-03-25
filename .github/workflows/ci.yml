@@ -7,18 +7,26 @@ on:
     branches: [main]
 
 jobs:
-  lint:
+  validate-structure:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      - uses: actions/checkout@v6
       - name: Validate project structure
         run: |
           echo "Checking Apps Script project structure..."
-          test -f appsscript.json && echo "appsscript.json found" || echo "Missing appsscript.json"
-          test -d src && echo "src/ directory found" || echo "Missing src/"
+          test -f appsscript.json && echo "appsscript.json found" || (echo "Missing appsscript.json" && exit 1)
+          test -d src && echo "src/ directory found" || (echo "Missing src/" && exit 1)
+
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Lint and test
+        run: |
           if [ -f "package.json" ]; then
             npm ci
             npm run lint --if-present
