@@ -22,7 +22,7 @@ Google Sheets add-on that converts Canadian legal land descriptions (DLS, NTS, G
 
 ## API Integration
 
-- API base URL: `https://townshipcanada.com/api`
+- API base URL: `https://developer.townshipcanada.com`
 - Auth via `X-API-Key` header
 - Results cached 6 hours via CacheService
 - 100 sample DLS values work offline without any API key (AB, SK, MB across W1–W6 meridians)

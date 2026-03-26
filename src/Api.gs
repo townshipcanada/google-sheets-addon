@@ -2,7 +2,7 @@
  * Township Canada Google Sheets Add-On - API Client
  *
  * Handles all HTTP communication with the Township Canada API
- * at townshipcanada.com/api.
+ * at developer.townshipcanada.com.
  */
 
 /**

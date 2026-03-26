@@ -7,7 +7,7 @@
 const CONFIG = (function() {
   const props = PropertiesService.getScriptProperties();
   return {
-    API_BASE_URL: props.getProperty("API_BASE_URL") || "https://townshipcanada.com/api",
+    API_BASE_URL: props.getProperty("API_BASE_URL") || "https://developer.townshipcanada.com",
     MAX_BATCH_SIZE: 200,
     ADDON_VERSION: "1.1.0"
   };

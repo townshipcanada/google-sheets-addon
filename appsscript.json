@@ -9,7 +9,7 @@
     "https://www.googleapis.com/auth/script.external_request"
   ],
   "urlFetchWhitelist": [
-    "https://townshipcanada.com/api/"
+    "https://developer.townshipcanada.com/"
   ],
   "addOns": {
     "common": {

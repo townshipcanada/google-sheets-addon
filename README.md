@@ -26,11 +26,11 @@ The add-on includes 100 hardcoded DLS locations across Alberta, Saskatchewan, an
 
 For example, try `=TOWNSHIP_CANADA("NW-25-24-1-W5")` — no setup needed.
 
-To convert any legal land description beyond the sample set, get an API key at [townshipcanada.com/pricing](https://townshipcanada.com/pricing#api).
+To convert any legal land description beyond the sample set, get an API key at [townshipcanada.com/api](https://townshipcanada.com/api/).
 
 ## API Endpoints
 
-The add-on communicates with the Township Canada API at `https://townshipcanada.com/api`.
+The add-on communicates with the Township Canada API at `https://developer.townshipcanada.com`.
 
 | Endpoint | Method | Description |
 | --- | --- | --- |
