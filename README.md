@@ -9,7 +9,7 @@ Convert Canadian legal land descriptions (DLS, NTS, Geographic Townships) to GPS
 - **All survey systems**: DLS (AB, SK, MB), NTS (BC), Geographic Townships (ON), River Lots, UWI, FPS Grid
 - **Caching**: Results are cached for 6 hours to reduce redundant API calls
 - **Try offline**: 100 built-in sample DLS locations work instantly without an API key
-- **Freemium**: Free trial key available; unlimited access with a paid API key
+- **API access**: Connect your Township Canada API key for full access
 
 ## Custom Functions
 
@@ -26,20 +26,16 @@ The add-on includes 100 hardcoded DLS locations across Alberta, Saskatchewan, an
 
 For example, try `=TOWNSHIP_CANADA("NW-25-24-1-W5")` — no setup needed.
 
-To convert any legal land description beyond the sample set, get an API key at [townshipcanada.com/api/try](https://townshipcanada.com/api/try?ref=sheets).
+To convert any legal land description beyond the sample set, get an API key at [townshipcanada.com/pricing](https://townshipcanada.com/pricing#api).
 
 ## API Endpoints
 
-The add-on communicates with the Township Canada API. The base URL depends on the key type:
-
-- **Trial keys** (`tc_trial_*`): `https://townshipcanada.com/api/integrations/trial`
-- **Paid keys** (`tc_*`): `https://developer.townshipcanada.com`
+The add-on communicates with the Township Canada API at `https://townshipcanada.com/api`.
 
 | Endpoint | Method | Description |
 | --- | --- | --- |
 | `/search/legal-location?location={query}` | GET | Convert a single legal land description |
 | `/batch/legal-location` | POST | Convert a batch of legal land descriptions (JSON array body) |
-| `/usage` | GET | Check trial key usage (trial keys only) |
 
 Authentication is via the `X-API-Key` header.
 

@@ -223,17 +223,6 @@
         font-weight: 600;
       }
 
-      .trial-info {
-        background: #e8eef5;
-        border: 1px solid #5a8cba;
-        border-radius: 8px;
-        padding: 10px 12px;
-        margin-bottom: 16px;
-        font-size: 12px;
-        color: #1a3d5c;
-        line-height: 1.4;
-      }
-
       .spinner {
         display: inline-block;
         width: 14px;
@@ -302,7 +291,7 @@
       style="display: none"
     >
       <h4>API Key Required</h4>
-      <p>Connect a trial or paid API key to start converting legal land descriptions.</p>
+      <p>Connect your API key to start converting legal land descriptions.</p>
       <button
         class="btn"
         onclick="google.script.run.showSettingsDialog()"
@@ -327,10 +316,6 @@
           style="width: 0%"
         ></div>
       </div>
-    </div>
-
-    <!-- Trial info banner -->
-    <div class="trial-info" id="trialInfo" style="display: none">
     </div>
 
     <!-- Batch conversion section -->
@@ -417,12 +402,6 @@
       >
       &nbsp;&middot;&nbsp;
       <a
-        href="https://townshipcanada.com/api/try?ref=sheets"
-        target="_blank"
-        >Get Trial Key</a
-      >
-      &nbsp;&middot;&nbsp;
-      <a
         href="https://townshipcanada.com/pricing#api"
         target="_blank"
         >Pricing</a
@@ -447,42 +426,18 @@
         var countEl = document.getElementById("usageCount");
         var progressEl = document.getElementById("usageProgress");
         var setupBanner = document.getElementById("setupBanner");
-        var trialInfo = document.getElementById("trialInfo");
         var usageLabel = document.getElementById("usageLabel");
 
         if (!usage.apiKeyValid) {
-          // No API key connected
           setupBanner.style.display = "block";
           usageBar.style.display = "none";
-          trialInfo.style.display = "none";
-        } else if (usage.plan === "trial") {
-          // Trial key
-          setupBanner.style.display = "none";
-          usageBar.style.display = "block";
-          usageLabel.textContent = "Trial Usage";
-          countEl.innerHTML = usage.used + "<span> / " + usage.limit + " calls</span>";
-          var pct = Math.min(100, (usage.used / usage.limit) * 100);
-          progressEl.style.width = pct + "%";
-
-          if (pct >= 100) {
-            progressEl.className = "progress-fill danger";
-          } else if (pct >= 70) {
-            progressEl.className = "progress-fill warning";
-          } else {
-            progressEl.className = "progress-fill";
-          }
-
-          trialInfo.style.display = "block";
-          trialInfo.textContent = usage.daysLeft + " days remaining on trial. Upgrade at townshipcanada.com/pricing for unlimited access.";
         } else {
-          // Paid key
           setupBanner.style.display = "none";
           usageBar.style.display = "block";
-          usageLabel.textContent = "API Usage";
-          countEl.innerHTML = "Unlimited <span>(paid API key)</span>";
+          usageLabel.textContent = "API Status";
+          countEl.innerHTML = "Connected <span>(API key)</span>";
           progressEl.className = "progress-fill unlimited";
           progressEl.style.width = "100%";
-          trialInfo.style.display = "none";
         }
       }
 
