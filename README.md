@@ -8,6 +8,7 @@ Convert Canadian legal land descriptions (DLS, NTS, Geographic Townships) to GPS
 - **Batch conversion**: Convert entire columns via the sidebar UI
 - **All survey systems**: DLS (AB, SK, MB), NTS (BC), Geographic Townships (ON), River Lots, UWI, FPS Grid
 - **Caching**: Results are cached for 6 hours to reduce redundant API calls
+- **Try offline**: 100 built-in sample DLS locations work instantly without an API key
 - **Freemium**: Free trial key available; unlimited access with a paid API key
 
 ## Custom Functions
@@ -18,6 +19,14 @@ Convert Canadian legal land descriptions (DLS, NTS, Geographic Townships) to GPS
 | `=TOWNSHIP_CANADA_LAT(cell)` | Latitude number | `=TOWNSHIP_CANADA_LAT("NW-25-24-1-W5")` -> 52.123456 |
 | `=TOWNSHIP_CANADA_LNG(cell)` | Longitude number | `=TOWNSHIP_CANADA_LNG("NW-25-24-1-W5")` -> -114.654321 |
 | `=TOWNSHIP_CANADA_PROVINCE(cell)` | Province name | `=TOWNSHIP_CANADA_PROVINCE("NW-25-24-1-W5")` -> "Alberta" |
+
+## Sample Data (No API Key Required)
+
+The add-on includes 100 hardcoded DLS locations across Alberta, Saskatchewan, and Manitoba (W1–W6 meridians) in both quarter-section and LSD formats. These work instantly without an API key so you can try the add-on right away.
+
+For example, try `=TOWNSHIP_CANADA("NW-25-24-1-W5")` — no setup needed.
+
+To convert any legal land description beyond the sample set, get an API key at [townshipcanada.com/api/try](https://townshipcanada.com/api/try?ref=sheets).
 
 ## API Endpoints
 
