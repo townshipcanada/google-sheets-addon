@@ -15,6 +15,12 @@
  * @returns {object} Conversion result with latitude, longitude, province, etc.
  */
 function getCachedResult_(lld) {
+  // Check hardcoded sample data first (works without API key)
+  const sample = getSampleResult_(lld);
+  if (sample) {
+    return sample;
+  }
+
   const cache = CacheService.getUserCache();
   const cacheKey = "tc_" + lld;
   const cached = cache.get(cacheKey);
