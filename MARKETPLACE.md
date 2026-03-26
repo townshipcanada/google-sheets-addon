@@ -1,16 +1,16 @@
-# Google Workspace Marketplace Listing
+# Google Workspace™ Marketplace Listing
 
 ## App Name
 
-Township Canada - Legal Land Description Converter
+Township Canada - Legal Land Description Converter for Google Sheets™
 
 ## Short Description (140 chars)
 
-Convert Canadian legal land descriptions (DLS, NTS, Township) to GPS coordinates directly in Google Sheets.
+Convert Canadian legal land descriptions (DLS, NTS, Township) to GPS coordinates directly in Google Sheets™.
 
 ## Detailed Description
 
-Township Canada converts Canadian legal land descriptions to GPS coordinates directly in your Google Sheets spreadsheet. No copy-pasting from web tools, no manual lookups.
+Township Canada converts Canadian legal land descriptions to GPS coordinates directly in your Google Sheets™ spreadsheet. No copy-pasting from web tools, no manual lookups.
 
 **Custom spreadsheet functions:**
 
@@ -34,6 +34,8 @@ Get a free trial key (100 calls, 7 days). Connect your Township Canada API key f
 **Who uses Township Canada:**
 
 Landmen, geologists, agronomists, insurance adjusters, real estate professionals, surveyors, and anyone who works with Canadian legal land descriptions in spreadsheets.
+
+Google Sheets™ and Google Workspace™ are trademarks of Google LLC.
 
 ## Category
 
@@ -78,4 +80,4 @@ https://townshipcanada.com/support
 
 ## Trademark Attribution
 
-Google Sheets is a trademark of Google LLC.
+Google Sheets™ and Google Workspace™ are trademarks of Google LLC.
