@@ -1,10 +1,8 @@
 /**
  * Township Canada Google Sheets Add-On - API Client
  *
- * Handles all HTTP communication with the Township Canada API.
- * Both trial and paid API keys use the same request/response contract.
- * Trial keys route to townshipcanada.com/api/integrations/trial;
- * paid keys route to developer.townshipcanada.com.
+ * Handles all HTTP communication with the Township Canada API
+ * at developer.townshipcanada.com.
  */
 
 /**
@@ -71,7 +69,7 @@ function extractFromFeatureCollection(fc) {
 
 /**
  * Convert a single legal land description via the API.
- * Uses GET /search/legal-location -- same contract for trial and paid keys.
+ * Uses GET /search/legal-location.
  * @param {string} query - The legal land description to convert.
  * @returns {object} Conversion result with latitude, longitude, etc.
  */
@@ -94,12 +92,6 @@ function apiConvertSingle(query) {
   if (code === 401) {
     throw new Error("INVALID_API_KEY");
   }
-  if (code === 403) {
-    throw new Error("TRIAL_EXPIRED");
-  }
-  if (code === 429) {
-    throw new Error("TRIAL_LIMIT_REACHED");
-  }
   if (code !== 200) {
     throw new Error(body.message || "API request failed");
   }
@@ -109,7 +101,7 @@ function apiConvertSingle(query) {
 
 /**
  * Convert a batch of legal land descriptions via the API.
- * Uses POST /batch/legal-location -- same contract for trial and paid keys.
+ * Uses POST /batch/legal-location.
  * @param {string[]} queries - Array of legal land descriptions.
  * @returns {object[]} Array of GeoJSON FeatureCollections.
  */
@@ -133,12 +125,6 @@ function apiConvertBatch(queries) {
   if (code === 401) {
     throw new Error("INVALID_API_KEY");
   }
-  if (code === 403) {
-    throw new Error("TRIAL_EXPIRED");
-  }
-  if (code === 429) {
-    throw new Error("TRIAL_LIMIT_REACHED");
-  }
   if (code !== 200) {
     throw new Error(body.message || "Batch API request failed");
   }
@@ -148,31 +134,12 @@ function apiConvertBatch(queries) {
 
 /**
  * Get current usage information for the connected API key.
- * Usage endpoint is only available for trial keys.
- * @returns {object} Usage data with plan, limit, used, remaining.
+ * @returns {object} Usage data with plan and apiKeyValid flag.
  */
 function apiGetUsage() {
   if (!hasApiKey()) {
     return { plan: "none", apiKeyValid: false };
   }
 
-  if (!isTrialKey()) {
-    return { plan: "api_key", apiKeyValid: true };
-  }
-
-  const url = CONFIG.TRIAL_API_BASE_URL + "/usage";
-  const options = {
-    method: "get",
-    headers: buildHeaders(),
-    muteHttpExceptions: true
-  };
-
-  const response = UrlFetchApp.fetch(url, options);
-
-  if (response.getResponseCode() !== 200) {
-    return { plan: "none", apiKeyValid: false };
-  }
-
-  const body = safeParseJson_(response.getContentText());
-  return body.data || { plan: "none", apiKeyValid: false };
+  return { plan: "api_key", apiKeyValid: true };
 }

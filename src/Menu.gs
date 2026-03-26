@@ -55,22 +55,8 @@ function showApiKeyError(errorMessage) {
   if (errorMessage === "NO_API_KEY") {
     ui.alert(
       "API key required.\n\n" +
-      "Connect a trial or paid API key:\n" +
-      "Township Canada menu > Settings\n\n" +
-      "Get a free trial key at:\n" +
-      CONFIG.TRIAL_URL
-    );
-  } else if (errorMessage === "TRIAL_EXPIRED") {
-    ui.alert(
-      "Your trial key has expired.\n\n" +
-      "Upgrade to a paid plan for continued access:\n" +
-      "https://townshipcanada.com/pricing#api"
-    );
-  } else if (errorMessage === "TRIAL_LIMIT_REACHED") {
-    ui.alert(
-      "Trial usage limit reached.\n\n" +
-      "Upgrade to a paid plan for continued access:\n" +
-      "https://townshipcanada.com/pricing#api"
+      "Connect your API key:\n" +
+      "Township Canada menu > Settings"
     );
   } else if (errorMessage === "INVALID_API_KEY") {
     ui.alert(
@@ -210,14 +196,6 @@ function convertColumnPrompt() {
       const batchResponse = apiConvertBatch(chunk);
       allResults = allResults.concat(batchResponse.data);
     } catch (e) {
-      if (e.message === "TRIAL_LIMIT_REACHED" || e.message === "TRIAL_EXPIRED") {
-        ui.alert(
-          "Trial limit reached after " + allResults.length + " conversions.\n\n" +
-          "Upgrade to a paid plan for continued access:\n" +
-          "https://townshipcanada.com/pricing#api"
-        );
-        break;
-      }
       showApiKeyError(e.message);
       return;
     }
@@ -378,19 +356,10 @@ function showUsageDialog() {
 
   if (!usage.apiKeyValid) {
     message = "No API key connected.\n\n" +
-      "Connect a trial or paid API key to start converting:\n" +
-      "Township Canada menu > Settings\n\n" +
-      "Get a free trial key (100 calls, 7 days):\n" +
-      CONFIG.TRIAL_URL;
-  } else if (usage.plan === "trial") {
-    message = "Plan: Trial\n" +
-      "Used: " + usage.used + "/" + usage.limit + " calls\n" +
-      "Remaining: " + usage.remaining + " calls\n" +
-      "Days left: " + usage.daysLeft + "\n\n" +
-      "Upgrade for unlimited access:\n" +
-      "https://townshipcanada.com/pricing#api";
+      "Connect your API key:\n" +
+      "Township Canada menu > Settings";
   } else {
-    message = "Plan: Paid API Key (unlimited)\nAPI key is connected and valid.";
+    message = "API key is connected and valid.";
   }
 
   SpreadsheetApp.getUi().alert("Township Canada Usage", message, SpreadsheetApp.getUi().ButtonSet.OK);

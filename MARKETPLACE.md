@@ -29,7 +29,7 @@ Select a column of legal land descriptions and convert them all at once. Results
 
 **Free to start:**
 
-Get a free trial key (100 calls, 7 days). Connect your Township Canada API key for unlimited access.
+100 built-in sample locations work instantly without an API key. Connect your Township Canada API key for full access.
 
 **Who uses Township Canada:**
 
@@ -51,7 +51,7 @@ English
 
 ## Pricing
 
-Freemium - free trial key (100 calls, 7 days), paid API key for unlimited
+Free to try with 100 built-in samples, paid API key for full access
 
 ## Screenshots Required
 

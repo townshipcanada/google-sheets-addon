@@ -13,10 +13,8 @@ function createHomepageCard() {
   let usageText;
   if (!usage.apiKeyValid) {
     usageText = "No API key connected";
-  } else if (usage.plan === "trial") {
-    usageText = usage.used + "/" + usage.limit + " trial calls (" + usage.daysLeft + " days left)";
   } else {
-    usageText = "Unlimited (paid API key)";
+    usageText = "API key connected";
   }
 
   const card = CardService.newCardBuilder()

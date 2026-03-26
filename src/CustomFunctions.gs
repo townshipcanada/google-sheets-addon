@@ -49,8 +49,7 @@ function getCachedResult_(lld) {
  * Supports DLS (AB, SK, MB), NTS (BC), Geographic Townships (ON),
  * River Lots, UWI, and FPS Grid formats.
  *
- * Requires a Township Canada API key (trial or paid).
- * Get a free trial key at: townshipcanada.com/api/try
+ * Requires a Township Canada API key.
  *
  * Note: Each cell with this function makes a separate API call.
  * For bulk conversions (10+ descriptions), use the sidebar instead:
@@ -74,12 +73,6 @@ function TOWNSHIP_CANADA(lld) {
   } catch (e) {
     if (e.message === "NO_API_KEY") {
       return "API key required";
-    }
-    if (e.message === "TRIAL_EXPIRED") {
-      return "Trial expired";
-    }
-    if (e.message === "TRIAL_LIMIT_REACHED") {
-      return "Trial limit reached";
     }
     if (e.message === "INVALID_API_KEY") {
       return "Invalid API key";
@@ -110,9 +103,6 @@ function TOWNSHIP_CANADA_LAT(lld) {
     if (e.message === "NO_API_KEY") {
       return "API key required";
     }
-    if (e.message === "TRIAL_EXPIRED" || e.message === "TRIAL_LIMIT_REACHED") {
-      return "Trial ended";
-    }
     return "Error";
   }
 }
@@ -139,9 +129,6 @@ function TOWNSHIP_CANADA_LNG(lld) {
     if (e.message === "NO_API_KEY") {
       return "API key required";
     }
-    if (e.message === "TRIAL_EXPIRED" || e.message === "TRIAL_LIMIT_REACHED") {
-      return "Trial ended";
-    }
     return "Error";
   }
 }
@@ -167,9 +154,6 @@ function TOWNSHIP_CANADA_PROVINCE(lld) {
   } catch (e) {
     if (e.message === "NO_API_KEY") {
       return "API key required";
-    }
-    if (e.message === "TRIAL_EXPIRED" || e.message === "TRIAL_LIMIT_REACHED") {
-      return "Trial ended";
     }
     return "Error";
   }
