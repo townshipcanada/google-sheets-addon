@@ -13,6 +13,7 @@ Google Sheets add-on that converts Canadian legal land descriptions (DLS, NTS, G
 - `src/Api.gs` — API client (calls townshipcanada.com endpoints)
 - `src/Config.gs` — Configuration constants (API URLs, cache TTL)
 - `src/CustomFunctions.gs` — Sheet functions: `TOWNSHIP_CANADA()`, `_LAT()`, `_LNG()`, `_PROVINCE()`
+- `src/SampleData.gs` — 100 hardcoded DLS sample values for offline demo (no API key needed)
 - `src/Cards.gs` — Card-based UI for the add-on homepage
 - `src/Menu.gs` — Menu and sidebar triggers
 - `src/Sidebar.html` — Sidebar UI for batch conversion
@@ -25,6 +26,7 @@ Google Sheets add-on that converts Canadian legal land descriptions (DLS, NTS, G
 - Paid keys (`tc_*`) → `https://developer.townshipcanada.com`
 - Auth via `X-API-Key` header
 - Results cached 6 hours via CacheService
+- 100 sample DLS values work offline without any API key (AB, SK, MB across W1–W6 meridians)
 
 ## Development
 
