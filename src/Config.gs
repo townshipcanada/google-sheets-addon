@@ -8,7 +8,8 @@ const CONFIG = (function() {
   const props = PropertiesService.getScriptProperties();
   return {
     API_BASE_URL: props.getProperty("API_BASE_URL") || "https://developer.townshipcanada.com",
-    MAX_BATCH_SIZE: 200,
+    // The Batch API rejects requests over 100 items with 413 (api/services/batch).
+    MAX_BATCH_SIZE: 100,
     ADDON_VERSION: "1.1.0"
   };
 })();

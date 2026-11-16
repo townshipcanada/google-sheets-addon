@@ -99,8 +99,7 @@ function convertSelectedCells() {
   }
 
   try {
-    const response = apiConvertBatch(queries);
-    const results = response.data;
+    const results = convertQueriesInBatches_(queries);
 
     // Write results to columns immediately right of selection
     const startRow = range.getRow();
@@ -128,7 +127,7 @@ function convertSelectedCells() {
       }
     }
 
-    const stats = response.statistics;
+    const stats = summarizeBatchResults_(results);
     SpreadsheetApp.getUi().alert(
       "Conversion complete!\n\n" +
       "Total: " + stats.total + "\n" +
@@ -188,17 +187,13 @@ function convertColumnPrompt() {
     return;
   }
 
-  // Process in batches
-  let allResults = [];
-  for (let i = 0; i < queries.length; i += CONFIG.MAX_BATCH_SIZE) {
-    const chunk = queries.slice(i, i + CONFIG.MAX_BATCH_SIZE);
-    try {
-      const batchResponse = apiConvertBatch(chunk);
-      allResults = allResults.concat(batchResponse.data);
-    } catch (e) {
-      showApiKeyError(e.message);
-      return;
-    }
+  // Process in batches the API accepts
+  let allResults;
+  try {
+    allResults = convertQueriesInBatches_(queries);
+  } catch (e) {
+    showApiKeyError(e.message);
+    return;
   }
 
   // Write results
@@ -220,9 +215,8 @@ function convertColumnPrompt() {
     }
   }
 
-  const total = allResults.length;
-  const success = allResults.filter(function(r) { return r.latitude !== null; }).length;
-  ui.alert("Done! Converted " + success + "/" + total + " descriptions.");
+  const stats = summarizeBatchResults_(allResults);
+  ui.alert("Done! Converted " + stats.success + "/" + stats.total + " descriptions.");
 }
 
 /**
@@ -262,12 +256,7 @@ function convertColumnDirect(colLetter) {
     throw new Error("No legal land descriptions found in column " + colLetter + ".");
   }
 
-  let allResults = [];
-  for (let i = 0; i < queries.length; i += CONFIG.MAX_BATCH_SIZE) {
-    const chunk = queries.slice(i, i + CONFIG.MAX_BATCH_SIZE);
-    const batchResponse = apiConvertBatch(chunk);
-    allResults = allResults.concat(batchResponse.data);
-  }
+  const allResults = convertQueriesInBatches_(queries);
 
   const outputCol = colNum + 1;
   sheet.getRange(1, outputCol, 1, 3).setValues([["Latitude", "Longitude", "Province"]]);
@@ -285,9 +274,7 @@ function convertColumnDirect(colLetter) {
     }
   }
 
-  const total = allResults.length;
-  const success = allResults.filter(function(r) { return r.latitude !== null; }).length;
-  return { total: total, success: success, failure: total - success };
+  return summarizeBatchResults_(allResults);
 }
 
 /**
@@ -316,8 +303,7 @@ function convertSelectedDirect() {
     throw new Error("No legal land descriptions found in the selected cells.");
   }
 
-  const response = apiConvertBatch(queries);
-  const results = response.data;
+  const results = convertQueriesInBatches_(queries);
 
   const startRow = range.getRow();
   const startCol = range.getColumn() + range.getNumColumns();
@@ -343,8 +329,7 @@ function convertSelectedDirect() {
     }
   }
 
-  const stats = response.statistics;
-  return { total: stats.total, success: stats.success, failure: stats.failure };
+  return summarizeBatchResults_(results);
 }
 
 /**
