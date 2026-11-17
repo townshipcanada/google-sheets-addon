@@ -9,7 +9,8 @@
     "open": "clasp open",
     "deploy": "clasp deploy",
     "logs": "clasp logs",
-    "watch": "clasp push --watch"
+    "watch": "clasp push --watch",
+    "test": "node --test test/batch.test.js"
   },
   "devDependencies": {
     "@google/clasp": "^2.4.2"

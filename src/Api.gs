@@ -101,7 +101,10 @@ function apiConvertSingle(query) {
 
 /**
  * Convert a batch of legal land descriptions via the API.
- * Uses POST /batch/legal-location.
+ * Uses POST /batch/legal-location, which accepts at most CONFIG.MAX_BATCH_SIZE
+ * items and returns a bare JSON array of GeoJSON FeatureCollections, one per
+ * matched input. Unmatched inputs are left out, so callers must match results
+ * back to inputs (see matchBatchResults_), not rely on position.
  * @param {string[]} queries - Array of legal land descriptions.
  * @returns {object[]} Array of GeoJSON FeatureCollections.
  */
@@ -128,8 +131,78 @@ function apiConvertBatch(queries) {
   if (code !== 200) {
     throw new Error(body.message || "Batch API request failed");
   }
+  if (!Array.isArray(body)) {
+    throw new Error("Unexpected Batch API response");
+  }
 
   return body;
+}
+
+/**
+ * Normalize a description the way the Batch API does before echoing it back
+ * as properties.search_term (api/packages/shared sanitizeLocationInput).
+ * @param {string} query The raw description.
+ * @returns {string} The normalized key.
+ */
+function normalizeBatchTerm_(query) {
+  return String(query).trim().replace(/['"]/g, "").replace(/[;\\]/g, "");
+}
+
+/**
+ * Match Batch API FeatureCollections back to the queries that produced them.
+ * @param {string[]} queries The descriptions sent in one request.
+ * @param {object[]} featureCollections The API response array.
+ * @returns {object[]} One result per query, in query order; unmatched queries
+ *   get null latitude/longitude.
+ */
+function matchBatchResults_(queries, featureCollections) {
+  const byTerm = {};
+  for (let i = 0; i < featureCollections.length; i++) {
+    const fc = featureCollections[i];
+    const features = (fc && fc.features) || [];
+    for (let j = 0; j < features.length; j++) {
+      const props = features[j].properties || {};
+      if (props.search_term) {
+        if (!byTerm.hasOwnProperty(props.search_term)) {
+          byTerm[props.search_term] = extractFromFeatureCollection(fc);
+        }
+        break;
+      }
+    }
+  }
+
+  return queries.map(function(query) {
+    const key = normalizeBatchTerm_(query);
+    if (byTerm.hasOwnProperty(key)) {
+      return byTerm[key];
+    }
+    return { latitude: null, longitude: null, legal_location: null, province: null };
+  });
+}
+
+/**
+ * Convert any number of descriptions, splitting them into requests the Batch
+ * API accepts.
+ * @param {string[]} queries Non-empty descriptions.
+ * @returns {object[]} One result per query, in query order.
+ */
+function convertQueriesInBatches_(queries) {
+  let results = [];
+  for (let i = 0; i < queries.length; i += CONFIG.MAX_BATCH_SIZE) {
+    const chunk = queries.slice(i, i + CONFIG.MAX_BATCH_SIZE);
+    results = results.concat(matchBatchResults_(chunk, apiConvertBatch(chunk)));
+  }
+  return results;
+}
+
+/**
+ * Count successes and failures in a list of conversion results.
+ * @param {object[]} results Results from convertQueriesInBatches_.
+ * @returns {object} { total, success, failure }.
+ */
+function summarizeBatchResults_(results) {
+  const success = results.filter(function(r) { return r.latitude !== null; }).length;
+  return { total: results.length, success: success, failure: results.length - success };
 }
 
 /**
