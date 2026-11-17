@@ -4,7 +4,7 @@
  * 100 hardcoded DLS values so users can try the add-on offline.
  * These are real legal land descriptions with accurate GPS coordinates.
  * For full access to all locations, purchase a batch API key at:
- * https://townshipcanada.com/api/try?ref=sheets
+ * https://townshipcanada.com/pricing?ref=google-sheets-addon#api-plans
  */
 
 /**
