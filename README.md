@@ -26,7 +26,7 @@ The add-on includes 100 hardcoded DLS locations across Alberta, Saskatchewan, an
 
 For example, try `=TOWNSHIP_CANADA("NW-25-24-1-W5")` — no setup needed.
 
-To convert any legal land description beyond the sample set, get an API key at [townshipcanada.com/api](https://townshipcanada.com/api/).
+To convert any legal land description beyond the sample set, choose a plan on the [API plans page](https://townshipcanada.com/pricing?ref=google-sheets-addon#api-plans) and connect the API key in the add-on settings.
 
 ## API Endpoints
 
